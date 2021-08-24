@@ -1,19 +1,22 @@
 
-piped.domain.tld {
+FRONTEND_HOSTNAME {
   reverse_proxy pipedfrontend:80
 }
 
-pipedapi.domain.tld {
+BACKEND_HOSTNAME {
   reverse_proxy varnish:80
 }
 
-pipedproxy.domain.tld {
+PROXY_HOSTNAME {
+
+  header_upstream -CF-Connecting-IP
+  header_upstream -X-Forwarded-For
 
   @ytproxy path /videoplayback* /api/v4/* /api/manifest/*
 
   @optionscall {
     method OPTIONS
-    }
+  }
 
   header Access-Control-Allow-Origin *
   header Access-Control-Allow-Headers *
@@ -22,7 +25,6 @@ pipedproxy.domain.tld {
 
     header @ytproxy {
       Cache-Control private always
-      CF-Connecting-IP ""
     }
 
     header / {
@@ -38,4 +40,3 @@ pipedproxy.domain.tld {
     }
   }
 }
-
