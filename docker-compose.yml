@@ -15,7 +15,7 @@ services:
         image: 1337kavin/piped:latest
         restart: unless-stopped
         volumes:
-            - ./config.properties:/app/config.properties
+            - ./config/config.properties:/app/config.properties
         depends_on:
             - ytproxy
             - postgres
@@ -24,7 +24,7 @@ services:
         image: varnish:6.6-alpine
         restart: unless-stopped
         volumes:
-            - ./default.vcl:/etc/varnish/default.vcl
+            - ./config/default.vcl:/etc/varnish/default.vcl
         container_name: varnish
     caddy:
         image: caddy:2-alpine
@@ -33,7 +33,7 @@ services:
             - "80:80"
             - "443:443"
         volumes:
-            - ./Caddyfile:/etc/caddy/Caddyfile
+            - ./config/Caddyfile:/etc/caddy/Caddyfile
             - ./caddy/config:/config
             - ./ytproxy:/var/run/ytproxy
         container_name: caddy
