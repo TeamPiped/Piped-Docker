@@ -9,9 +9,6 @@ BACKEND_HOSTNAME {
 
 PROXY_HOSTNAME {
 
-  header_upstream -CF-Connecting-IP
-  header_upstream -X-Forwarded-For
-
   @ytproxy path /videoplayback* /api/v4/* /api/manifest/*
 
   @optionscall {
@@ -29,12 +26,14 @@ PROXY_HOSTNAME {
 
     header / {
       Cache-Control "public, max-age=604800"
-      -Access-Control-Allow-Origin
     }
 
     respond @optionscall 200
 
     reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
+      header_up -CF-Connecting-IP
+      header_up -X-Forwarded-For
+      header_down -Access-Control-Allow-Origin
       header_down -etag
       header_down -alt-svc
     }
