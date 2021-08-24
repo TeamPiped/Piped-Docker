@@ -1,3 +1,10 @@
+{
+	servers :443 {
+		protocol {
+			experimental_http3
+		}
+	}
+}
 
 FRONTEND_HOSTNAME {
   reverse_proxy pipedfrontend:80
