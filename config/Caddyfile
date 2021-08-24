@@ -1,0 +1,41 @@
+
+piped.domain.tld {
+  reverse_proxy pipedfrontend:80
+}
+
+pipedapi.domain.tld {
+  reverse_proxy varnish:80
+}
+
+pipedproxy.domain.tld {
+
+  @ytproxy path /videoplayback* /api/v4/* /api/manifest/*
+
+  @optionscall {
+    method OPTIONS
+    }
+
+  header Access-Control-Allow-Origin *
+  header Access-Control-Allow-Headers *
+
+  route {
+
+    header @ytproxy {
+      Cache-Control private always
+      CF-Connecting-IP ""
+    }
+
+    header / {
+      Cache-Control "public, max-age=604800"
+      -Access-Control-Allow-Origin
+    }
+
+    respond @optionscall 200
+
+    reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
+      header_down -etag
+      header_down -alt-svc
+    }
+  }
+}
+
