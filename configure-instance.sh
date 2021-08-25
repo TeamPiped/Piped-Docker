@@ -14,3 +14,5 @@ cp -r template/ config/
 sed -i "s/FRONTEND_HOSTNAME/$frontend/g" config/*
 sed -i "s/BACKEND_HOSTNAME/$backend/g" config/*
 sed -i "s/PROXY_HOSTNAME/$proxy/g" config/*
+
+mv config/docker-compose.yml docker-compose.yml

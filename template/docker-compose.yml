@@ -5,6 +5,7 @@ services:
         depends_on:
             - piped
         container_name: piped-frontend
+        entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/BACKEND_HOSTNAME/g /usr/share/nginx/html/js/* && /docker-entrypoint.sh && nginx -g "daemon off;"'
     ytproxy:
         image: 1337kavin/ytproxy:latest
         restart: unless-stopped

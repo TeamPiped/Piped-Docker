@@ -1,2 +1,3 @@
 config/
 data/
+/docker-compose.yml
