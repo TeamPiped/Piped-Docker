@@ -17,7 +17,6 @@ services:
         volumes:
             - ./config/config.properties:/app/config.properties:ro
         depends_on:
-            - ytproxy
             - postgres
         container_name: piped-backend
     varnish:
