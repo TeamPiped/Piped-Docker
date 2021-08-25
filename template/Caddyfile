@@ -1,0 +1,48 @@
+{
+	servers :443 {
+		protocol {
+			experimental_http3
+		}
+	}
+}
+
+FRONTEND_HOSTNAME {
+  reverse_proxy pipedfrontend:80
+}
+
+BACKEND_HOSTNAME {
+  reverse_proxy varnish:80
+}
+
+PROXY_HOSTNAME {
+
+  @ytproxy path /videoplayback* /api/v4/* /api/manifest/*
+
+  @optionscall {
+    method OPTIONS
+  }
+
+  header Access-Control-Allow-Origin *
+  header Access-Control-Allow-Headers *
+
+  route {
+
+    header @ytproxy {
+      Cache-Control private always
+    }
+
+    header / {
+      Cache-Control "public, max-age=604800"
+    }
+
+    respond @optionscall 200
+
+    reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
+      header_up -CF-Connecting-IP
+      header_up -X-Forwarded-For
+      header_down -Access-Control-Allow-Origin
+      header_down -etag
+      header_down -alt-svc
+    }
+  }
+}

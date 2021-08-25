@@ -1,0 +1,65 @@
+services:
+    pipedfrontend:
+        image: 1337kavin/piped-frontend:latest
+        restart: unless-stopped
+        depends_on:
+            - piped
+        container_name: piped-frontend
+    ytproxy:
+        image: 1337kavin/ytproxy:latest
+        restart: unless-stopped
+        volumes:
+            - ytproxy:/app/socket
+        container_name: ytproxy
+    piped:
+        image: 1337kavin/piped:latest
+        restart: unless-stopped
+        volumes:
+            - ./config/config.properties:/app/config.properties:ro
+        depends_on:
+            - postgres
+        container_name: piped-backend
+    varnish:
+        image: varnish:6.6-alpine
+        restart: unless-stopped
+        volumes:
+            - ./config/default.vcl:/etc/varnish/default.vcl:ro
+        container_name: varnish
+        depends_on:
+            - piped
+    caddy:
+        image: caddy:2-alpine
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+            - "443:443/udp"
+        volumes:
+            - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+            - caddy_data:/data
+            - ytproxy:/var/run/ytproxy
+        container_name: caddy
+    postgres:
+        image: postgres:13-alpine
+        restart: unless-stopped
+        volumes:
+            - ./data/db:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_DB=piped
+            - POSTGRES_USER=piped
+            - POSTGRES_PASSWORD=changeme
+        container_name: postgres
+    watchtower:
+        image: containrrr/watchtower
+        restart: always
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /etc/timezone:/etc/timezone:ro
+        environment:
+            - WATCHTOWER_CLEANUP=true
+            - WATCHTOWER_INCLUDE_RESTARTING=true
+        container_name: watchtower
+        command: piped-frontend piped-backend ytproxy varnish caddy postgres watchtower
+volumes:
+    caddy_data:
+    ytproxy:
