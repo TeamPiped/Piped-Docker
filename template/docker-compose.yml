@@ -21,7 +21,7 @@ services:
             - postgres
         container_name: piped-backend
     varnish:
-        image: varnish:6.6-alpine
+        image: varnish:7.0-alpine
         restart: unless-stopped
         volumes:
             - ./config/default.vcl:/etc/varnish/default.vcl:ro

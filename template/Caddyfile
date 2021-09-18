@@ -1,48 +1,88 @@
 {
-	servers :443 {
-		protocol {
-			experimental_http3
-		}
-	}
+    servers :443 {
+        protocol {
+            experimental_http3
+        }
+    }
 }
 
 FRONTEND_HOSTNAME {
-  reverse_proxy pipedfrontend:80
+    reverse_proxy pipedfrontend:80
+    header {
+        # disable FLoC tracking
+        Permissions-Policy interest-cohort=()
+
+        # enable HSTS
+        Strict-Transport-Security max-age=31536000;
+
+        # keep referrer data off
+        Referrer-Policy no-referrer
+
+        # prevent for appearing in search engine for private instances (option)
+        #X-Robots-Tag noindex
+    }
 }
 
 BACKEND_HOSTNAME {
-  reverse_proxy varnish:80
+    reverse_proxy varnish:80
+    header {
+        # disable FLoC tracking
+        Permissions-Policy interest-cohort=()
+
+        # enable HSTS
+        Strict-Transport-Security max-age=31536000;
+
+        # keep referrer data off
+        Referrer-Policy no-referrer
+
+        # prevent for appearing in search engine for private instances (option)
+        #X-Robots-Tag noindex
+    }
 }
 
 PROXY_HOSTNAME {
 
-  @ytproxy path /videoplayback* /api/v4/* /api/manifest/*
+    @ytproxy path /videoplayback* /api/v4/* /api/manifest/*
 
-  @optionscall {
-    method OPTIONS
-  }
-
-  header Access-Control-Allow-Origin *
-  header Access-Control-Allow-Headers *
-
-  route {
-
-    header @ytproxy {
-      Cache-Control private always
+    @optionscall {
+        method OPTIONS
     }
 
-    header / {
-      Cache-Control "public, max-age=604800"
+    header {
+        Access-Control-Allow-Origin *
+        Access-Control-Allow-Headers *
+  
+        # disable FLoC tracking
+        Permissions-Policy interest-cohort=()
+
+        # enable HSTS
+        Strict-Transport-Security max-age=31536000;
+
+        # keep referrer data off
+        Referrer-Policy no-referrer
+
+        # prevent for appearing in search engine for private instances (option)
+        #X-Robots-Tag noindex
     }
 
-    respond @optionscall 200
+    route {
 
-    reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
-      header_up -CF-Connecting-IP
-      header_up -X-Forwarded-For
-      header_down -Access-Control-Allow-Origin
-      header_down -etag
-      header_down -alt-svc
+        header @ytproxy {
+            Cache-Control private always
+        }
+
+        header / {
+            Cache-Control "public, max-age=604800"
+        }
+
+        respond @optionscall 200
+
+        reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
+            header_up -CF-Connecting-IP
+            header_up -X-Forwarded-For
+            header_down -Access-Control-Allow-Origin
+            header_down -etag
+            header_down -alt-svc
+        }
     }
-  }
 }
