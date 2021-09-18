@@ -8,10 +8,36 @@
 
 FRONTEND_HOSTNAME {
   reverse_proxy pipedfrontend:80
+  header {
+  # disable FLoC tracking
+  Permissions-Policy interest-cohort=()
+
+  # enable HSTS
+  Strict-Transport-Security max-age=31536000;
+
+  # keep referrer data off
+  Referrer-Policy no-referrer
+
+  # prevent for appearing in search engine for private instances (option)
+  #X-Robots-Tag noindex
+  }
 }
 
 BACKEND_HOSTNAME {
   reverse_proxy varnish:80
+  header {
+  # disable FLoC tracking
+  Permissions-Policy interest-cohort=()
+
+  # enable HSTS
+  Strict-Transport-Security max-age=31536000;
+
+  # keep referrer data off
+  Referrer-Policy no-referrer
+
+  # prevent for appearing in search engine for private instances (option)
+  #X-Robots-Tag noindex
+  }
 }
 
 PROXY_HOSTNAME {
@@ -22,8 +48,22 @@ PROXY_HOSTNAME {
     method OPTIONS
   }
 
-  header Access-Control-Allow-Origin *
-  header Access-Control-Allow-Headers *
+  header {
+  Access-Control-Allow-Origin *
+  Access-Control-Allow-Headers *
+  
+  # disable FLoC tracking
+  Permissions-Policy interest-cohort=()
+
+  # enable HSTS
+  Strict-Transport-Security max-age=31536000;
+
+  # keep referrer data off
+  Referrer-Policy no-referrer
+
+  # prevent for appearing in search engine for private instances (option)
+  #X-Robots-Tag noindex
+  }
 
   route {
 
