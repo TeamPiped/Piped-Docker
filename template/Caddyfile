@@ -1,88 +1,88 @@
 {
-	servers :443 {
-		protocol {
-			experimental_http3
-		}
-	}
+    servers :443 {
+        protocol {
+            experimental_http3
+        }
+    }
 }
 
 FRONTEND_HOSTNAME {
-  reverse_proxy pipedfrontend:80
-  header {
-  # disable FLoC tracking
-  Permissions-Policy interest-cohort=()
+    reverse_proxy pipedfrontend:80
+    header {
+        # disable FLoC tracking
+        Permissions-Policy interest-cohort=()
 
-  # enable HSTS
-  Strict-Transport-Security max-age=31536000;
+        # enable HSTS
+        Strict-Transport-Security max-age=31536000;
 
-  # keep referrer data off
-  Referrer-Policy no-referrer
+        # keep referrer data off
+        Referrer-Policy no-referrer
 
-  # prevent for appearing in search engine for private instances (option)
-  #X-Robots-Tag noindex
-  }
+        # prevent for appearing in search engine for private instances (option)
+        #X-Robots-Tag noindex
+    }
 }
 
 BACKEND_HOSTNAME {
-  reverse_proxy varnish:80
-  header {
-  # disable FLoC tracking
-  Permissions-Policy interest-cohort=()
+    reverse_proxy varnish:80
+    header {
+        # disable FLoC tracking
+        Permissions-Policy interest-cohort=()
 
-  # enable HSTS
-  Strict-Transport-Security max-age=31536000;
+        # enable HSTS
+        Strict-Transport-Security max-age=31536000;
 
-  # keep referrer data off
-  Referrer-Policy no-referrer
+        # keep referrer data off
+        Referrer-Policy no-referrer
 
-  # prevent for appearing in search engine for private instances (option)
-  #X-Robots-Tag noindex
-  }
+        # prevent for appearing in search engine for private instances (option)
+        #X-Robots-Tag noindex
+    }
 }
 
 PROXY_HOSTNAME {
 
-  @ytproxy path /videoplayback* /api/v4/* /api/manifest/*
+    @ytproxy path /videoplayback* /api/v4/* /api/manifest/*
 
-  @optionscall {
-    method OPTIONS
-  }
+    @optionscall {
+        method OPTIONS
+    }
 
-  header {
-  Access-Control-Allow-Origin *
-  Access-Control-Allow-Headers *
+    header {
+        Access-Control-Allow-Origin *
+        Access-Control-Allow-Headers *
   
-  # disable FLoC tracking
-  Permissions-Policy interest-cohort=()
+        # disable FLoC tracking
+        Permissions-Policy interest-cohort=()
 
-  # enable HSTS
-  Strict-Transport-Security max-age=31536000;
+        # enable HSTS
+        Strict-Transport-Security max-age=31536000;
 
-  # keep referrer data off
-  Referrer-Policy no-referrer
+        # keep referrer data off
+        Referrer-Policy no-referrer
 
-  # prevent for appearing in search engine for private instances (option)
-  #X-Robots-Tag noindex
-  }
-
-  route {
-
-    header @ytproxy {
-      Cache-Control private always
+        # prevent for appearing in search engine for private instances (option)
+        #X-Robots-Tag noindex
     }
 
-    header / {
-      Cache-Control "public, max-age=604800"
-    }
+    route {
 
-    respond @optionscall 200
+        header @ytproxy {
+            Cache-Control private always
+        }
 
-    reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
-      header_up -CF-Connecting-IP
-      header_up -X-Forwarded-For
-      header_down -Access-Control-Allow-Origin
-      header_down -etag
-      header_down -alt-svc
+        header / {
+            Cache-Control "public, max-age=604800"
+        }
+
+        respond @optionscall 200
+
+        reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
+            header_up -CF-Connecting-IP
+            header_up -X-Forwarded-For
+            header_down -Access-Control-Allow-Origin
+            header_down -etag
+            header_down -alt-svc
+        }
     }
-  }
 }
