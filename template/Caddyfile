@@ -24,8 +24,14 @@ FRONTEND_HOSTNAME {
 }
 
 BACKEND_HOSTNAME {
-	reverse_proxy varnish:80
+	reverse_proxy varnish:80 {
+		# remove `*` from the `Access-Control-Allow-Origin` header
+    header_down -Access-Control-Allow-Origin
+  }
 	header {
+		# enable CORS for the frontend hostname
+		Access-Control-Allow-Origin https://FRONTEND_HOSTNAME
+
 		# disable FLoC tracking
 		Permissions-Policy interest-cohort=()
 
@@ -48,7 +54,8 @@ PROXY_HOSTNAME {
 	}
 
 	header {
-		Access-Control-Allow-Origin *
+		# enable CORS for the frontend hostname
+		Access-Control-Allow-Origin https://FRONTEND_HOSTNAME
 		Access-Control-Allow-Headers *
 
 		# disable FLoC tracking
