@@ -28,6 +28,11 @@ services:
         container_name: varnish
         depends_on:
             - piped
+        healthcheck:
+            test: ash -c "wget --no-verbose --tries=1 --spider 127.0.0.1:80/trending?region=US || (varnishreload && exit 1)"
+            interval: 10s
+            timeout: 10s
+            retries: 1
     nginx:
         image: nginx:mainline-alpine
         restart: unless-stopped
