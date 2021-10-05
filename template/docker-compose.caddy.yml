@@ -33,7 +33,6 @@ services:
             interval: 10s
             timeout: 10s
             retries: 1
-        
     caddy:
         image: caddy:2-alpine
         restart: unless-stopped
