@@ -43,14 +43,7 @@ BACKEND_HOSTNAME {
 PROXY_HOSTNAME {
 	@ytproxy path /videoplayback* /api/v4/* /api/manifest/*
 
-	@optionscall {
-		method OPTIONS
-	}
-
 	header {
-		Access-Control-Allow-Origin *
-		Access-Control-Allow-Headers *
-
 		# disable FLoC tracking
 		Permissions-Policy interest-cohort=()
 
@@ -73,12 +66,9 @@ PROXY_HOSTNAME {
 			Cache-Control "public, max-age=604800"
 		}
 
-		respond @optionscall 200
-
 		reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
 			header_up -CF-Connecting-IP
 			header_up -X-Forwarded-For
-			header_down -Access-Control-Allow-Origin
 			header_down -etag
 			header_down -alt-svc
 		}
