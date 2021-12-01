@@ -19,4 +19,8 @@ sed -i "s/FRONTEND_HOSTNAME/$frontend/g" config/*
 sed -i "s/BACKEND_HOSTNAME/$backend/g" config/*
 sed -i "s/PROXY_HOSTNAME/$proxy/g" config/*
 
+if [[ "$(uname -m)" == "aarch64" ]]; then
+    sed -i "s/piped:latest/piped:hotspot/g" config/*
+fi
+
 mv config/docker-compose.$reverseproxy.yml docker-compose.yml
