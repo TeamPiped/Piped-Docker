@@ -5,7 +5,9 @@ services:
         depends_on:
             - piped
         container_name: piped-frontend
-        entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/BACKEND_HOSTNAME/g /usr/share/nginx/html/js/* && /docker-entrypoint.sh && nginx -g "daemon off;"'
+        entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/BACKEND_HOSTNAME/g
+            /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g
+            "daemon off;"'
     ytproxy:
         image: 1337kavin/ytproxy:latest
         restart: unless-stopped
@@ -29,7 +31,8 @@ services:
         depends_on:
             - piped
         healthcheck:
-            test: ash -c "wget --no-verbose --tries=1 --spider 127.0.0.1:80/trending?region=US || (varnishreload && exit 1)"
+            test: ash -c "wget --no-verbose --tries=1 --spider
+                127.0.0.1:80/trending?region=US || (varnishreload && exit 1)"
             interval: 10s
             timeout: 10s
             retries: 1
@@ -67,5 +70,5 @@ services:
         container_name: watchtower
         command: piped-frontend piped-backend ytproxy varnish caddy postgres watchtower
 volumes:
-    caddy_data:
-    ytproxy:
+    caddy_data: null
+    ytproxy: null
