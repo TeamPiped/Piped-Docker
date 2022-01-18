@@ -15,11 +15,11 @@ fi
 
 echo "Enter an url for the Frontend (eg: https://piped.kavin.rocks):" && read -r frontend_url
 
-echo "Enter an url for the Backend (eg: https://pipedapi.kavin.rocks):"" && read -r backend_url
+echo "Enter an url for the Backend (eg: https://pipedapi.kavin.rocks):" && read -r backend_url
 
 echo "Enter an hostname for the Proxy (eg: https://pipedproxy.kavin.rocks):" && read -r proxy_url
 
-echo "Enter the reverse proxy you would like to use (either caddy or nginx):"" && read -r reverseproxy
+echo "Enter the reverse proxy you would like to use (either caddy or nginx):" && read -r reverseproxy
 
 rm -rf config/
 rm -f docker-compose.yml
