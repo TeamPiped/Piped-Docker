@@ -1,9 +1,3 @@
-# Check if Docker-Compose is not installed
-if [ -z "$(which docker-compose)" ]; then
-    echo "Docker-Compose is not installed. Please install it first from https://docs.docker.com/compose/install/#install-compose."
-    exit 1
-fi
-
 echo "Enter a hostname for the Frontend (eg: piped.kavin.rocks):" && read -r frontend
 echo "Enter a hostname for the Backend (eg: pipedapi.kavin.rocks):" && read -r backend
 echo "Enter a hostname for the Proxy (eg: pipedproxy.kavin.rocks):" && read -r proxy
