@@ -20,6 +20,8 @@ frontend_port=$(echo "$frontend_url"| awk -F[/:] '{print $5}'| { read -d '' port
 backend_port=$(echo "$backend_url"| awk -F[/:] '{print $5}'| { read -d '' port; [ -z "$port" ] && { [ "$backend_schema" = "https" ] && echo "443" || echo "80"; } || echo "$port"; })
 proxy_port=$(echo "$proxy_url"| awk -F[/:] '{print $5}'| { read -d '' port; [ -z "$port" ] && { [ "$proxy_schema" = "https" ] && echo "443" || echo "80"; } || echo "$port"; })
 
+nginx_ports=$(printf "$frontend_port\n$backend_port\n$proxy_port\n"|uniq|while read -r port; do printf "            - \"$port:$port\"\\\n"; done)
+
 sed -i '' "s@FRONT_URL@$frontend_url@g" config/*
 sed -i '' "s@BACKEND_URL@$backend_url@g" config/*
 sed -i '' "s@PROXY_URL@$proxy_url@g" config/*
@@ -31,6 +33,8 @@ sed -i '' "s@PROXY_HOSTNAME@$proxy_hostname@g" config/*
 sed -i '' "s@FRONTEND_PORT@$frontend_port@g" config/*
 sed -i '' "s@BACKEND_PORT@$backend_port@g" config/*
 sed -i '' "s@PROXY_PORT@$proxy_port@g" config/*
+
+sed -i '' "s@NGINX_PORTS@$nginx_ports@g" config/*
 
 # The openj9 image does not support aarch64
 if [[ "$(uname -m)" == "aarch64" ]]; then

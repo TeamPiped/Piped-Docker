@@ -39,9 +39,7 @@ services:
         image: nginx:mainline-alpine
         restart: unless-stopped
         ports:
-            - "FRONTEND_PORT:FRONTEND_PORT"
-            - "BACKEND_PORT:BACKEND_PORT"
-            - "PROXY_PORT:PROXY_PORT"
+NGINX_PORTS
         volumes:
             - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
             - ./config/pipedapi.conf:/etc/nginx/conf.d/pipedapi.conf:ro
