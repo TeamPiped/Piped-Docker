@@ -22,23 +22,41 @@ proxy_port=$(echo "$proxy_url"| awk -F[/:] '{print $5}'| { read -d '' port; [ -z
 
 nginx_ports=$(printf "$frontend_port\n$backend_port\n$proxy_port\n"|uniq|while read -r port; do printf "            - \"$port:$port\"\\\n"; done)
 
-sed -i '' "s@FRONT_URL@$frontend_url@g" config/*
-sed -i '' "s@BACKEND_URL@$backend_url@g" config/*
-sed -i '' "s@PROXY_URL@$proxy_url@g" config/*
+case $OSTYPE in
+    darwin*)
+      function ased(){
+        sed -i '' "$@"
+      }
+      ;;
+    freebsd*)
+      function ased(){
+        sed -i '' "$@"
+      }
+      ;;
+    linux*)
+      function ased(){
+        sed -i "$@"
+      }
+      ;;
+esac
 
-sed -i '' "s@FRONTEND_HOSTNAME@$frontend_hostname@g" config/*
-sed -i '' "s@BACKEND_HOSTNAME@$backend_hostname@g" config/*
-sed -i '' "s@PROXY_HOSTNAME@$proxy_hostname@g" config/*
+ased "s@FRONT_URL@$frontend_url@g" config/*
+ased "s@BACKEND_URL@$backend_url@g" config/*
+ased "s@PROXY_URL@$proxy_url@g" config/*
 
-sed -i '' "s@FRONTEND_PORT@$frontend_port@g" config/*
-sed -i '' "s@BACKEND_PORT@$backend_port@g" config/*
-sed -i '' "s@PROXY_PORT@$proxy_port@g" config/*
+ased "s@FRONTEND_HOSTNAME@$frontend_hostname@g" config/*
+ased "s@BACKEND_HOSTNAME@$backend_hostname@g" config/*
+ased "s@PROXY_HOSTNAME@$proxy_hostname@g" config/*
 
-sed -i '' "s@NGINX_PORTS@$nginx_ports@g" config/*
+ased "s@FRONTEND_PORT@$frontend_port@g" config/*
+ased "s@BACKEND_PORT@$backend_port@g" config/*
+ased "s@PROXY_PORT@$proxy_port@g" config/*
+
+ased "s@NGINX_PORTS@$nginx_ports@g" config/*
 
 # The openj9 image does not support aarch64
 if [[ "$(uname -m)" == "aarch64" ]]; then
-    sed -i '' "s/piped:latest/piped:hotspot/g" config/*
+    ased "s/piped:latest/piped:hotspot/g" config/*
 fi
 
 mv config/docker-compose.$reverseproxy.yml docker-compose.yml
