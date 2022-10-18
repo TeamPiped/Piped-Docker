@@ -1,18 +1,4 @@
-# Check if Docker-Compose is not installed
-if [ -z "$(which docker-compose)" ]; then
-    echo "Docker-Compose is not installed. Please install it first from https://docs.docker.com/compose/install/#install-compose."
-    exit 1
-fi
-
-# Docker-Compose version check, to prevent "Unsupported configuration option"
-COMPOSE_VERSION=$(docker-compose version --short)
-REQUIRED_COMPOSE_VERSION="1.28.0"
-if [[ $(printf '%s\n' "$REQUIRED_COMPOSE_VERSION" "$COMPOSE_VERSION" | sort -V | head -n1) != $REQUIRED_COMPOSE_VERSION ]]; then
-    echo "Your docker-compose version of $COMPOSE_VERSION is too old. Please upgrade to $REQUIRED_COMPOSE_VERSION or higher."
-    echo "See https://docs.docker.com/compose/install/#install-compose for installation instructions."
-    exit 1
-fi
-
+#!/usr/bin/env bash
 echo "Enter a hostname for the Frontend (eg: piped.kavin.rocks):" && read -r frontend
 echo "Enter a hostname for the Backend (eg: pipedapi.kavin.rocks):" && read -r backend
 echo "Enter a hostname for the Proxy (eg: pipedproxy.kavin.rocks):" && read -r proxy

@@ -1,3 +1,5 @@
+version: "3"
+
 services:
     pipedfrontend:
         image: 1337kavin/piped-frontend:latest
@@ -26,21 +28,6 @@ services:
         container_name: piped-backend
         labels:
             com.centurylinklabs.watchtower.scope: piped
-    varnish:
-        image: varnish:7.0-alpine
-        restart: unless-stopped
-        volumes:
-            - ./config/default.vcl:/etc/varnish/default.vcl:ro
-        container_name: varnish
-        depends_on:
-            - piped
-        healthcheck:
-            test: ash -c "wget --no-verbose --tries=1 --spider 127.0.0.1:80/feed || (varnishreload && exit 1)"
-            interval: 10s
-            timeout: 10s
-            retries: 1
-        labels:
-            com.centurylinklabs.watchtower.scope: piped
     nginx:
         image: nginx:mainline-alpine
         restart: unless-stopped
@@ -56,7 +43,6 @@ services:
         container_name: nginx
         depends_on:
             - piped
-            - varnish
             - ytproxy
             - pipedfrontend
         labels:
