@@ -20,7 +20,7 @@ FRONTEND_HOSTNAME {
 }
 
 BACKEND_HOSTNAME {
-	reverse_proxy varnish:80
+	reverse_proxy nginx:80
 	import global
 }
 
