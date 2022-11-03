@@ -24,19 +24,15 @@ services:
         depends_on:
             - postgres
         container_name: piped-backend
-    varnish:
-        image: varnish:7.0-alpine
+    nginx:
+        image: nginx:mainline-alpine
         restart: unless-stopped
         volumes:
-            - ./config/default.vcl:/etc/varnish/default.vcl:ro
-        container_name: varnish
+            - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./config/pipedapi.conf:/etc/nginx/conf.d/pipedapi.conf:ro
+        container_name: nginx
         depends_on:
             - piped
-        healthcheck:
-            test: ash -c "wget --no-verbose --tries=1 --spider 127.0.0.1:80/feed || (varnishreload && exit 1)"
-            interval: 10s
-            timeout: 10s
-            retries: 1
     caddy:
         image: caddy:2-alpine
         restart: unless-stopped
@@ -47,7 +43,7 @@ services:
         volumes:
             - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
             - caddy_data:/data
-            - piped-proxy:/var/run/piped-proxy
+            - piped-proxy:/var/run/ytproxy
         container_name: caddy
     postgres:
         image: postgres:13-alpine
@@ -69,7 +65,7 @@ services:
             - WATCHTOWER_CLEANUP=true
             - WATCHTOWER_INCLUDE_RESTARTING=true
         container_name: watchtower
-        command: piped-frontend piped-backend piped-proxy varnish caddy postgres watchtower
+        command: piped-frontend piped-backend piped-proxy nginx caddy postgres watchtower
 volumes:
     caddy_data: null
     piped-proxy: null
