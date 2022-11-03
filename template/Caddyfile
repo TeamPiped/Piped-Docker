@@ -37,7 +37,7 @@ PROXY_HOSTNAME {
 			Cache-Control "public, max-age=604800"
 		}
 
-		reverse_proxy unix//var/run/ytproxy/http-proxy.sock {
+		reverse_proxy unix//var/run/ytproxy/actix.sock {
 			header_up -CF-Connecting-IP
 			header_up -X-Forwarded-For
 			header_down -etag

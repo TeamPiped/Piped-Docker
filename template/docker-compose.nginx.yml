@@ -8,12 +8,14 @@ services:
             - piped
         container_name: piped-frontend
         entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/BACKEND_HOSTNAME/g /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon off;"'
-    ytproxy:
-        image: 1337kavin/ytproxy:latest
+    piped-proxy:
+        image: 1337kavin/piped-proxy:latest
         restart: unless-stopped
+        environment:
+            - UDS=1
         volumes:
-            - ytproxy:/app/socket
-        container_name: ytproxy
+            - piped-proxy:/app/socket
+        container_name: piped-proxy
     piped:
         image: 1337kavin/piped:latest
         restart: unless-stopped
@@ -33,11 +35,11 @@ services:
             - ./config/pipedproxy.conf:/etc/nginx/conf.d/pipedproxy.conf:ro
             - ./config/pipedfrontend.conf:/etc/nginx/conf.d/pipedfrontend.conf:ro
             - ./config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
-            - ytproxy:/var/run/ytproxy
+            - piped-proxy:/var/run/ytproxy
         container_name: nginx
         depends_on:
             - piped
-            - ytproxy
+            - piped-proxy
             - pipedfrontend
     postgres:
         image: postgres:13-alpine
@@ -59,6 +61,6 @@ services:
             - WATCHTOWER_CLEANUP=true
             - WATCHTOWER_INCLUDE_RESTARTING=true
         container_name: watchtower
-        command: piped-frontend piped-backend ytproxy varnish nginx postgres watchtower
+        command: piped-frontend piped-backend piped-proxy varnish nginx postgres watchtower
 volumes:
-    ytproxy: null
+    piped-proxy: null
