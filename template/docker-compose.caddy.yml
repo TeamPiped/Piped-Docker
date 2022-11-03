@@ -43,7 +43,7 @@ services:
         volumes:
             - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
             - caddy_data:/data
-            - piped-proxy:/var/run/piped-proxy
+            - piped-proxy:/var/run/ytproxy
         container_name: caddy
     postgres:
         image: postgres:13-alpine
