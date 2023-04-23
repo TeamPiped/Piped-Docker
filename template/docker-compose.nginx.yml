@@ -42,7 +42,7 @@ services:
             - piped-proxy
             - pipedfrontend
     postgres:
-        image: postgres:13-alpine
+        image: postgres:15
         restart: unless-stopped
         volumes:
             - ./data/db:/var/lib/postgresql/data
