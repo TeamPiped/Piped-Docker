@@ -54,14 +54,10 @@ services:
     postgres:
         image: postgres:15
         restart: unless-stopped
+        env_file:
+            - configuration.env
         volumes:
             - ./data/db:/var/lib/postgresql/data
-        environment:
-        # Database settings. Make sure to adjust these values
-        # on the configuration.env file too.
-            - POSTGRES_DB=piped
-            - POSTGRES_USER=piped
-            - POSTGRES_PASSWORD=changeme
     watchtower:
         image: containrrr/watchtower
         restart: always
