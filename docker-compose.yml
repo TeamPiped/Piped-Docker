@@ -49,6 +49,7 @@ services:
             - ./config/piped.key:/etc/nginx/ssl/piped.key
             - ./config/piped.crt:/etc/nginx/ssl/piped.crt
             - piped-proxy:/var/run/ytproxy:z
+            - ./entrypoint.d/host_replace.envsh:/docker-entrypoint.d/99-host_replace.envsh
         depends_on:
             - piped-backend
             - piped-proxy
