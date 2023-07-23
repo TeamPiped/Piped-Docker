@@ -1,0 +1,81 @@
+version: "3"
+
+services:
+    piped-frontend:
+        image: 1337kavin/piped-frontend:latest
+        container_name: piped-frontend
+        restart: unless-stopped
+        depends_on:
+            - piped-backend
+        env_file:
+            - configuration.env
+        volumes:
+            - ./entrypoint.d/host_replace.envsh:/docker-entrypoint.d/99-host_replace.envsh
+    piped-proxy:
+        image: 1337kavin/piped-proxy:latest
+        container_name: piped-proxy
+        restart: unless-stopped
+        environment:
+            - UDS=1
+        volumes:
+          - piped-proxy:/app/socket:z
+    piped-backend:
+        image: 1337kavin/piped:latest
+        container_name: piped-backend
+        restart: unless-stopped
+        env_file:
+            - configuration.env
+        volumes:
+            - ./entrypoint.d/backend-startup.sh:/app/backend-startup.sh:ro
+        command: /bin/sh /app/backend-startup.sh
+        depends_on:
+            - postgres
+    nginx:
+        image: nginx:mainline-alpine
+        container_name: nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+        env_file:
+            - configuration.env
+        volumes:
+            - ./config/piped.conf.template:/etc/nginx/templates/piped.conf.template:ro
+            - ./config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
+            - ./config/ssl.conf:/etc/nginx/snippets/ssl.conf
+            - ./config/piped.key:/etc/nginx/ssl/piped.key
+            - ./config/piped.crt:/etc/nginx/ssl/piped.crt
+            - piped-proxy:/var/run/ytproxy:z
+            - ./entrypoint.d/host_replace.envsh:/docker-entrypoint.d/99-host_replace.envsh
+        depends_on:
+            - piped-backend
+            - piped-proxy
+            - piped-frontend
+    postgres:
+        image: postgres:15
+        restart: unless-stopped
+        env_file:
+            - configuration.env
+        volumes:
+            - ./data/db:/var/lib/postgresql/data
+
+
+    # Podman users, be aware that watchtower relies on a Docker socket to work
+    # look at the logs after startup with `podman-compose logs watchtower`
+    # If you see errors, make sure the podman service is enabled and the
+    # socket /var/run/docker.sock exists.
+    # If errors persist, comment this entire section.
+    # Watchtower is used to update the images automaticaly. Fortunately,
+    # Podman offers a way to do that using Dystemd, you could use that
+    # for auto-updates instead.
+    watchtower:
+        image: containrrr/watchtower
+        restart: always
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /etc/timezone:/etc/timezone:ro
+        env_file:
+            - configuration.env
+        command: piped-frontend piped-proxy piped-backend nginx postgres watchtower
+volumes:
+    piped-proxy: null
