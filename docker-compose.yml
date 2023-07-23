@@ -58,6 +58,16 @@ services:
             - configuration.env
         volumes:
             - ./data/db:/var/lib/postgresql/data
+
+
+    # Podman users, be aware that watchtower relies on a Docker socket to work
+    # look at the logs after startup with `podman-compose logs watchtower`
+    # If you see errors, make sure the podman service is enabled and the
+    # socket /var/run/docker.sock exists.
+    # If errors persist, comment this entire section.
+    # Watchtower is used to update the images automaticaly. Fortunately,
+    # Podman offers a way to do that using Dystemd, you could use that
+    # for auto-updates instead.
     watchtower:
         image: containrrr/watchtower
         restart: always
@@ -66,6 +76,6 @@ services:
             - /etc/timezone:/etc/timezone:ro
         env_file:
             - configuration.env
-        command: piped-frontend piped-backend piped-proxy nginx postgres watchtower
+        command: piped-frontend piped-proxy piped-backend nginx postgres watchtower
 volumes:
     piped-proxy: null

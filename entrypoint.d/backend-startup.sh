@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "hibernate.connection.url: jdbc:postgresql://${POSTGRES_HOST}:5432/piped" > /app/config.properties
+echo "hibernate.connection.url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}" > /app/config.properties
 echo "hibernate.connection.username: ${POSTGRES_USER}" >> /app/config.properties
 echo "hibernate.connection.password: ${POSTGRES_PASSWORD}" >> /app/config.properties
 echo "hibernate.connection.driver_class: org.postgresql.Driver" >> /app/config.properties
