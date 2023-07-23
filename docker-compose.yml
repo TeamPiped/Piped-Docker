@@ -1,0 +1,76 @@
+version: "3"
+
+services:
+    piped-frontend:
+        image: 1337kavin/piped-frontend:latest
+        container_name: piped-frontend
+        restart: unless-stopped
+        depends_on:
+            - piped-backend
+        environment:
+            - BACKEND_HOSTNAME=backend-host.example.com
+        volumes:
+            - ./entrypoint.d/host_replace.envsh:/docker-entrypoint.d/99-host_replace.envsh
+    piped-proxy:
+        image: 1337kavin/piped-proxy:latest
+        container_name: piped-proxy
+        restart: unless-stopped
+        environment:
+            - UDS=1
+        volumes:
+          - piped-proxy:/app/socket:z
+    piped-backend:
+        image: 1337kavin/piped:latest
+        container_name: piped-backend
+        restart: unless-stopped
+        environment:
+            - FRONTEND_URL=https://frontend-host.example.com
+            - API_URL=https://backend-host.example.com
+            - PROXY_PART=https://proxy-host.example.com
+        volumes:
+            - ./config/config.properties:/app/config.properties:ro
+        depends_on:
+            - postgres
+    nginx:
+        image: nginx:mainline-alpine
+        container_name: nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+        environment:
+            - FRONTEND_HOSTNAME=frontend-host.example.com
+            - BACKEND_HOSTNAME=backend-host.example.com
+            - PROXY_HOSTNAME=proxy-host.example.com
+        volumes:
+            - ./config/piped.conf.template:/etc/nginx/templates/piped.conf.template:ro
+            - ./config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
+            - ./config/ssl.conf:/etc/nginx/snippets/ssl.conf
+            - ./config/piped.key:/etc/nginx/ssl/piped.key
+            - ./config/piped.crt:/etc/nginx/ssl/piped.crt
+            - piped-proxy:/var/run/ytproxy:z
+        depends_on:
+            - piped-backend
+            - piped-proxy
+            - piped-frontend
+    postgres:
+        image: postgres:15
+        restart: unless-stopped
+        volumes:
+            - ./data/db:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_DB=piped
+            - POSTGRES_USER=piped
+            - POSTGRES_PASSWORD=changeme
+    watchtower:
+        image: containrrr/watchtower
+        restart: always
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /etc/timezone:/etc/timezone:ro
+        environment:
+            - WATCHTOWER_CLEANUP=true
+            - WATCHTOWER_INCLUDE_RESTARTING=true
+        command: piped-frontend piped-backend piped-proxy nginx postgres watchtower
+volumes:
+    piped-proxy: null

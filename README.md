@@ -1,3 +1,7 @@
 # Piped-Docker
 
-See https://piped-docs.kavin.rocks/docs/self-hosting/#docker-compose-caddy-aio-script
+### Creating Self-signed certificate
+
+https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs#generating-ssl-certificates
+
+
