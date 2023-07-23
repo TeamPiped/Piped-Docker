@@ -7,8 +7,8 @@ services:
         restart: unless-stopped
         depends_on:
             - piped-backend
-        environment:
-            - BACKEND_HOSTNAME=backend-host.example.com
+        env_file:
+            - configuration.env
         volumes:
             - ./entrypoint.d/host_replace.envsh:/docker-entrypoint.d/99-host_replace.envsh
     piped-proxy:
@@ -23,10 +23,8 @@ services:
         image: 1337kavin/piped:latest
         container_name: piped-backend
         restart: unless-stopped
-        environment:
-            - FRONTEND_URL=https://frontend-host.example.com
-            - API_URL=https://backend-host.example.com
-            - PROXY_PART=https://proxy-host.example.com
+        env_file:
+            - configuration.env
         volumes:
             - ./config/config.properties:/app/config.properties:ro
         depends_on:
@@ -60,6 +58,8 @@ services:
         volumes:
             - ./data/db:/var/lib/postgresql/data
         environment:
+        # Database settings. Make sure to adjust these values
+        # on the configuration.env file too.
             - POSTGRES_DB=piped
             - POSTGRES_USER=piped
             - POSTGRES_PASSWORD=changeme
