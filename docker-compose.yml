@@ -25,8 +25,8 @@ services:
         restart: unless-stopped
         env_file:
             - configuration.env
-        volumes:
-            - ./config/config.properties:/app/config.properties:ro
+#        volumes:
+#            - ./config/config.properties:/app/config.properties:ro
         depends_on:
             - postgres
     nginx:
@@ -36,10 +36,8 @@ services:
         ports:
             - "80:80"
             - "443:443"
-        environment:
-            - FRONTEND_HOSTNAME=frontend-host.example.com
-            - BACKEND_HOSTNAME=backend-host.example.com
-            - PROXY_HOSTNAME=proxy-host.example.com
+        env_file:
+            - configuration.env
         volumes:
             - ./config/piped.conf.template:/etc/nginx/templates/piped.conf.template:ro
             - ./config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
@@ -69,9 +67,8 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - /etc/timezone:/etc/timezone:ro
-        environment:
-            - WATCHTOWER_CLEANUP=true
-            - WATCHTOWER_INCLUDE_RESTARTING=true
+        env_file:
+            - configuration.env
         command: piped-frontend piped-backend piped-proxy nginx postgres watchtower
 volumes:
     piped-proxy: null
