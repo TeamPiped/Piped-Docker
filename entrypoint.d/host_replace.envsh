@@ -1,4 +1,9 @@
 #!/bin/sh
 
-sed -i 's/pipedapi.kavin.rocks/'$BACKEND_HOSTNAME'/g' /usr/share/nginx/html/assets/*
-sed -i '/user/s/nginx/root/' /etc/nginx/nginx.conf
+if [ -d "/usr/share/nginx/html/assets" ]; then
+    sed -i 's/pipedapi.kavin.rocks/'$BACKEND_HOSTNAME'/g' /usr/share/nginx/html/assets/*
+fi
+
+if [ -f "/etc/nginx/nginx.conf" ] ; then
+    sed -i '/user/s/nginx/root/' /etc/nginx/nginx.conf
+fi
