@@ -41,6 +41,11 @@ services:
             - piped
             - piped-proxy
             - pipedfrontend
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.piped.rule=Host(`FRONTEND_HOSTNAME`, `BACKEND_HOSTNAME`, `PROXY_HOSTNAME`)"
+            - "traefik.http.routers.piped.entrypoints=websecure"
+            - "traefik.http.services.piped.loadbalancer.server.port=8080"
     postgres:
         image: postgres:15
         restart: unless-stopped
