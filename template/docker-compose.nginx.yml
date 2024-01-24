@@ -20,7 +20,7 @@ services:
         image: 1337kavin/piped:latest
         restart: unless-stopped
         volumes:
-            - ./config/config.properties:/app/config.properties:ro
+            - ./config/config.properties:/config.properties:ro
         depends_on:
             - postgres
         container_name: piped-backend
