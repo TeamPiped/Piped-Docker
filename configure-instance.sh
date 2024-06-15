@@ -9,8 +9,11 @@ rm -f docker-compose.yml
 
 cp -r template/ config/
 
-sed -i "s/FRONTEND_HOSTNAME/$frontend/g" config/*
-sed -i "s/BACKEND_HOSTNAME/$backend/g" config/*
-sed -i "s/PROXY_HOSTNAME/$proxy/g" config/*
+conffiles=$(find config/ -type f ! -name '*.yml')
+sed -i "s/FRONTEND_HOSTNAME/$frontend/g" $conffiles
+sed -i "s/BACKEND_HOSTNAME/$backend/g" $conffiles
+sed -i "s/PROXY_HOSTNAME/$proxy/g" $conffiles
+
+sed -i "s/BACKEND_HOSTNAME_PLACEHOLDER/$backend/g" config/*.yml
 
 mv config/docker-compose.$reverseproxy.yml docker-compose.yml

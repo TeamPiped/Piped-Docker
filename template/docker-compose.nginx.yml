@@ -1,13 +1,12 @@
-version: "3"
-
 services:
-    pipedfrontend:
+    piped-frontend:
         image: 1337kavin/piped-frontend:latest
         restart: unless-stopped
         depends_on:
             - piped
+        environment:
+            BACKEND_HOSTNAME: BACKEND_HOSTNAME_PLACEHOLDER
         container_name: piped-frontend
-        entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/BACKEND_HOSTNAME/g /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon off;"'
     piped-proxy:
         image: 1337kavin/piped-proxy:latest
         restart: unless-stopped
