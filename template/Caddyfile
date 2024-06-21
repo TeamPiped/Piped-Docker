@@ -15,7 +15,7 @@
 }
 
 FRONTEND_HOSTNAME {
-	reverse_proxy pipedfrontend:80
+	reverse_proxy piped-frontend:80
 	import global
 }
 
