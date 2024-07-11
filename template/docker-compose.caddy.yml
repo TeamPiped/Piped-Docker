@@ -45,7 +45,7 @@ services:
             - piped-proxy:/var/run/ytproxy
         container_name: caddy
     postgres:
-        image: postgres:15
+        image: pgautoupgrade/pgautoupgrade:16-alpine
         restart: unless-stopped
         volumes:
             - ./data/db:/var/lib/postgresql/data

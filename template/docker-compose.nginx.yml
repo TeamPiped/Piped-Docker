@@ -46,7 +46,7 @@ services:
             - "traefik.http.routers.piped.entrypoints=websecure"
             - "traefik.http.services.piped.loadbalancer.server.port=8080"
     postgres:
-        image: postgres:15
+        image: pgautoupgrade/pgautoupgrade:16-alpine
         restart: unless-stopped
         volumes:
             - ./data/db:/var/lib/postgresql/data
