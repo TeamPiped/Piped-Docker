@@ -6,6 +6,7 @@ services:
             - piped
         environment:
             BACKEND_HOSTNAME: BACKEND_HOSTNAME_PLACEHOLDER
+            HTTP_MODE: HTTP_MODE_PLACEHOLDER
         container_name: piped-frontend
     piped-proxy:
         image: 1337kavin/piped-proxy:latest
