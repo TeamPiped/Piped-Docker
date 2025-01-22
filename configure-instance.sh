@@ -16,6 +16,6 @@ sed -i "s/BACKEND_HOSTNAME/$backend/g" $conffiles
 sed -i "s/PROXY_HOSTNAME/$proxy/g" $conffiles
 
 sed -i "s/BACKEND_HOSTNAME_PLACEHOLDER/$backend/g" config/*.yml
-sed -i "s/HTTP_MODE_PLACEHOLDER/$http_mode/g" config/*.yml
+sed -i "s/HTTP_MODE_PLACEHOLDER/$http_mode/g" config/*.yml $conffiles
 
 mv config/docker-compose.$reverseproxy.yml docker-compose.yml
