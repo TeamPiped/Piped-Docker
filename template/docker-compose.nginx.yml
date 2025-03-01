@@ -24,6 +24,10 @@ services:
         depends_on:
             - postgres
         container_name: piped-backend
+    bg-helper:
+        image: 1337kavin/bg-helper-server:latest
+        restart: unless-stopped
+        container_name: piped-bg-helper
     nginx:
         image: nginx:mainline-alpine
         restart: unless-stopped
@@ -66,6 +70,6 @@ services:
             - WATCHTOWER_CLEANUP=true
             - WATCHTOWER_INCLUDE_RESTARTING=true
         container_name: watchtower
-        command: piped-frontend piped-backend piped-proxy varnish nginx postgres watchtower
+        command: piped-frontend piped-backend piped-proxy piped-bg-helper varnish nginx postgres watchtower
 volumes:
     piped-proxy: null

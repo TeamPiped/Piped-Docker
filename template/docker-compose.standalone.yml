@@ -29,6 +29,11 @@ services:
             - "8082:8080"
         container_name: piped-proxy
 
+    bg-helper:
+        image: 1337kavin/bg-helper-server:latest
+        restart: unless-stopped
+        container_name: piped-bg-helper
+
     postgres:
         image: pgautoupgrade/pgautoupgrade:16-alpine
         restart: unless-stopped
