@@ -23,6 +23,8 @@ services:
             - ./config/config.properties:/app/config.properties:ro
         depends_on:
             - postgres
+        # environment: # Uncomment this and the line below if you use a different port for the `nginx` container otherwise healthcheck will always fail.
+        #    - PORT=8080
         container_name: piped-backend
     bg-helper:
         image: 1337kavin/bg-helper-server:latest
