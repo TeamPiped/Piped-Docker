@@ -60,7 +60,7 @@ services:
             - POSTGRES_PASSWORD=changeme
         container_name: postgres
     watchtower:
-        image: beatkind/watchtower
+        image: nickfedor/watchtower
         restart: always
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
